@@ -3,6 +3,7 @@ import AvailableVehiclesForBooking from "./AvailableVehiclesForBooking";
 
 export default function SearchVehicles() {
   const [availableVehicles, setAvailableVehicles] = useState<any>([]);
+  const [loading, setLoading] = useState(false);
 
   async function handleSubmit(e: any) {
     e.preventDefault();
@@ -11,6 +12,7 @@ export default function SearchVehicles() {
     const data = Object.fromEntries(formData.entries());
     console.log(data);
     try {
+      setLoading(true);
       const response = await fetch(
         `http://localhost:5000/api/vehicles/available?${new URLSearchParams(
           data as any
@@ -24,11 +26,13 @@ export default function SearchVehicles() {
         throw new Error(`Error: ${response.status} ${response.statusText}`);
       }
       const result = await response.json();
-      const {capacityRequired, ...booking} = data;
-      setAvailableVehicles({...result, booking});
+      const { capacityRequired, ...booking } = data;
+      setAvailableVehicles({ ...result, booking });
       // form.reset();
     } catch (e: any) {
       alert(e.message);
+    } finally {
+      setLoading(false);
     }
   }
 
@@ -93,7 +97,8 @@ export default function SearchVehicles() {
             <input
               className="w-50 rounded-pill m-1"
               type="submit"
-              value="Search Availability"
+              disabled={loading}
+              value={loading ? "Searching..." : "Search Availability"}
             />
           </div>
           <div className="col-md-6 text-center">

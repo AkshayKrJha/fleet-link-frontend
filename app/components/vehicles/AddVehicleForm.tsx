@@ -1,4 +1,7 @@
+import { useState } from "react";
+
 export default function AddVehicleForm() {
+  const [loading, setLoading] = useState(false);
   async function handleSubmit(e: any) {
     e.preventDefault();
     const form = e.target;
@@ -6,6 +9,7 @@ export default function AddVehicleForm() {
     const data = Object.fromEntries(formData.entries());
     console.log(data);
     try {
+      setLoading(true);
       const response = await fetch("http://localhost:5000/api/vehicles", {
         method: "POST",
         headers: {
@@ -22,6 +26,8 @@ export default function AddVehicleForm() {
       form.reset();
     } catch (e: any) {
       alert(e.message);
+    } finally {
+      setLoading(false);
     }
   }
   return (
@@ -65,11 +71,16 @@ export default function AddVehicleForm() {
             <input
               className="w-50 rounded-pill m-1"
               type="submit"
-              value="Add Vehicle"
+              value={loading ? "Adding..." : "Add Vehicle"}
+              disabled={loading}
             />
           </div>
           <div className="col-md-6 text-center">
-            <input className="w-50 rounded-pill m-1" type="reset" value="Reset" />
+            <input
+              className="w-50 rounded-pill m-1"
+              type="reset"
+              value="Reset"
+            />
           </div>
         </div>
       </form>

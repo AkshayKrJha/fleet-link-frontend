@@ -15,6 +15,7 @@ export default function AvailableVehiclesForBooking({
 }: {
   results: any;
 }) {
+  const [loading, setLoading] = useState(false);
   async function bookAVehicle(payload: any) {
     const { _id, ...rest } = payload;
     const newPayload = {
@@ -23,6 +24,7 @@ export default function AvailableVehiclesForBooking({
       ...rest,
     };
     try {
+      setLoading(true);
       const response = await fetch("http://localhost:5000/api/bookings", {
         method: "POST",
         headers: {
@@ -41,6 +43,8 @@ export default function AvailableVehiclesForBooking({
         `);
     } catch (error: any) {
       alert(error.message);
+    } finally {
+      setLoading(false);
     }
   }
 
@@ -79,11 +83,12 @@ export default function AvailableVehiclesForBooking({
                 <td>
                   <button
                     className="rounded-pill px-2"
+                    disabled={loading}
                     onClick={async () => {
                       await bookAVehicle({ ...vehicle, ...results?.booking });
                     }}
                   >
-                    Book Now
+                    {loading ? "Booking...": "Book Now"}
                   </button>
                 </td>
               </tr>
